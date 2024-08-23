@@ -12,11 +12,11 @@ in
     services.tsns = {
       package = mkPackageOption pkgs "tsns" { };
 
-      enable = lib.mkEnableOption "Enable tsns for ${name}";
+      enable = lib.mkEnableOption "Enable tsns";
 
       user = mkOption {
         type = with types; oneOf [ str int ];
-        default = name;
+        default = "tsns";
         description = ''
           The user the service will use.
         '';
@@ -24,7 +24,7 @@ in
 
       group = mkOption {
         type = with types; oneOf [ str int ];
-        default = name;
+        default = "tsns";
         description = ''
           The group the service will use.
         '';
@@ -32,7 +32,7 @@ in
 
       dataDir = mkOption {
         type = types.path;
-        default = "/var/lib/${name}";
+        default = "/var/lib/tsns";
         description = "Path tsns home directory";
       };
     };
@@ -43,7 +43,7 @@ in
 
     users.groups."${cfg.group}" = {};
     users.users."${cfg.user}" = {
-        description = "System user for tsns instance ${name}";
+        description = "System user for tsns instance ${cfg.user}";
         isSystemUser = true;
         group = cfg.group;
         home = "${cfg.dataDir}";
