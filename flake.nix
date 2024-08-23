@@ -31,7 +31,7 @@
         });
 
       defaultPackage = forAllSystems (system: self.packages.${system}.tsns);
-      nixosModule.default = import ./module.nix;
+      nixosModule = import ./module.nix;
       devShells = forAllSystems (system:
         let
           pkgs = nixpkgsFor.${system};
