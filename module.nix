@@ -6,7 +6,6 @@
 with lib;
 let
   cfg = config.services.tsns;
-  enabledServers = filterAttrs (_: conf: conf.enable) cfg.servers;
 in
 {
   options = {
@@ -39,38 +38,32 @@ in
     };
   };
 
-  config = mkIf (enabledServers != { }) {
+  config = mkIf cfg.enable {
     environment.systemPackages = [ cfg.package ];
 
-    users.groups = mapAttrs'
-      (name: _: nameValuePair name { })
-      enabledServers;
-    users.users = mapAttrs'
-      (name: conf: nameValuePair name {
+    users.groups."${cfg.group}" = {};
+    users.users."${cfg.user}" = {
         description = "System user for tsns instance ${name}";
         isSystemUser = true;
-        group = name;
-        home = "${conf.dataDir}";
+        group = cfg.group;
+        home = "${cfg.dataDir}";
         createHome = true;
-      })
-      enabledServers;
+    };
 
-    systemd.services = mapAttrs'
-      (name: conf: nameValuePair name {
-        description = "tsns instance ${name}";
-        enable = true;
-        after = [ "network-online.target" ];
-        wants = [ "network-online.target" ];
-        wantedBy = [ "multi-user.target" ];
-
-        environment = { HOME = "${conf.dataDir}"; };
-
-        serviceConfig = {
-          User = conf.user;
-          Group = conf.group;
-          ExecStart = "${cfg.package}/bin/tsns -d ${conf.dataDir}";
-        };
-      })
-      enabledServers;
+    systemd.services.tsns = {
+      description = "tsns";
+      enable = true;
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      wantedBy = [ "multi-user.target" ];
+      
+      environment = { HOME = "${cfg.dataDir}"; };
+      
+      serviceConfig = {
+        User = cfg.user;
+        Group = cfg.group;
+        ExecStart = "${cfg.package}/bin/tsns -d ${cfg.dataDir}";
+      };
+    };
   };
 }
