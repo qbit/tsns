@@ -48,12 +48,11 @@ func main() {
 		log.Fatalf("%s does not exist", *dataDir)
 	} else {
 		err = records.Load(*dataDir)
-		if err != nil && os.IsNotExist(err) {
+		// If it's just a missing file, continue along
+		if !os.IsNotExist(err) {
 			log.Fatalln(err)
 		}
 	}
-
-	log.Println(records.Entries)
 
 	tsServer := &tsnet.Server{
 		Hostname: *sName,
