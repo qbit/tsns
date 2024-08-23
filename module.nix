@@ -76,7 +76,7 @@ in
         serviceConfig = {
           User = conf.user;
           Group = conf.group;
-          ExecStart = "${cfg.package}/bin/tsns";
+          ExecStart = "${cfg.package}/bin/tsns -d ${conf.dataDir}";
         };
       })
       enabledServers;
