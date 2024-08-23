@@ -62,7 +62,7 @@ in
       serviceConfig = {
         User = cfg.user;
         Group = cfg.group;
-        ExecStart = "${cfg.package}/bin/tsns -d ${cfg.dataDir}";
+        ExecStart = "${cfg.package}/bin/tsns -data ${cfg.dataDir}";
       };
     };
   };
