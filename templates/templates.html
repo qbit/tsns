@@ -1,0 +1,119 @@
+{{ block "index" . }}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>tsns</title>
+    <script src="https://unpkg.com/htmx.org@2.0.2/dist/htmx.js" integrity="sha384-yZq+5izaUBKcRgFbxgkRYwpHhHHCpp5nseXp0MEQ1A4MTWVMnqkmcuFez8x5qfxr" crossorigin="anonymous"></script>
+    <style>
+     table {
+	 border: 1px solid black;
+	 border-radius: 20px;
+	 padding: 10px;
+     }
+
+     table thead {
+	 font-weight: bold;
+	 background-color: #fef;
+     }
+
+     tbody tr:nth-child(odd) {
+	 background-color: #eee;
+     }
+	 
+    </style>
+  </head>
+
+  <body>
+    <h1>tsns</h1>
+    <hr/>
+    {{ template "table" . }}
+    <hr/>
+    {{ template "form" . }}
+  </body>
+</html>
+{{ end }}
+
+{{ block "table" . }}
+<table id="thetable" >
+  <thead>
+    <tr>
+      <td>Name</td>
+      <td>IP</td>
+      <td>Manage</td>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range .Entries }}
+    {{ template "row" . }}
+    {{ end }}
+  </tbody>
+</table>
+{{ end }}
+
+{{ block "row" . }}
+<tr>
+  <td>{{ .Name }}</td>
+  <td>{{ .IP }}</td>
+  <td>
+    <button
+	hx-delete="/records/{{ .Name }}"
+	hx-swap="outerHTML"
+	hx-target="#thetable"
+    >Delete</a>
+  </td>
+</tr>
+{{ end }}
+
+{{ block "form" . }}
+<div id="add">
+  <form id="form" enctype="multipart/form-data">
+    <table>
+      <tr>
+	<td>
+	  <label for="ip">
+	    IP:
+	  </label>
+	</td>
+	<td>
+	  <input
+              id="ip"
+              form="form"
+              htmx-preserve="ip"
+              type="text"
+              name="ip"
+	  />
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  <label for="name">
+	    Name:
+	  </label>
+	</td>
+	<td>
+	  <input
+              id="name"
+              form="form"
+              htmx-preserve="name"
+              type="text"
+              name="name"
+	  />
+	</td>
+      </tr>
+      <tr>
+	<td>
+	  <button
+	      type="submit"
+	      hx-swap="outerHTML"
+	      hx-target="#thetable"
+	      hx-post="/records"
+	  >
+	    Submit
+	  </button>
+	</td>
+      </tr>
+    </table>
+  </form>
+</div>
+{{ end }}
