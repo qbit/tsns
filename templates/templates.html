@@ -23,7 +23,6 @@
 	 
     </style>
   </head>
-
   <body>
     <h1>tsns</h1>
     <hr/>
@@ -48,7 +47,15 @@
     {{ template "row" . }}
     {{ end }}
   </tbody>
+  <tfoot>
+    <tr>
+      <td>
+	<div id="error" >{{ .Error }}</div>
+      </td>
+    </tr>
+  </tfoot>
 </table>
+
 {{ end }}
 
 {{ block "row" . }}

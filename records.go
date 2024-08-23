@@ -12,6 +12,11 @@ import (
 	"github.com/miekg/dns"
 )
 
+type Response struct {
+	Error   error    `json:"error"`
+	Entries []Record `json:"entries"`
+}
+
 type Record struct {
 	Name string `json:"name"`
 	IP   net.IP `json:"ip"`

@@ -77,39 +77,45 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		httpLog(r)
-		if err := records.templ.ExecuteTemplate(w, "index", records); err != nil {
+		resp := &Response{}
+		resp.Entries = records.Entries
+		if err := records.templ.ExecuteTemplate(w, "index", resp); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	})
 	mux.HandleFunc("POST /records", func(w http.ResponseWriter, r *http.Request) {
 		httpLog(r)
-
+		resp := &Response{}
 		ipStr := r.FormValue("ip")
 		ip := net.ParseIP(ipStr)
-		rec := Record{
-			Name: r.FormValue("name"),
-			IP:   ip,
+		if ip != nil {
+			rec := Record{
+				Name: r.FormValue("name"),
+				IP:   ip,
+			}
+
+			records.Entries = append(records.Entries, rec)
+			records.Save(*dataDir)
+		} else {
+			resp.Error = fmt.Errorf("invalid IP: %q", ipStr)
 		}
 
-		records.Entries = append(records.Entries, rec)
-		records.Save(*dataDir)
+		resp.Entries = records.Entries
 
-		if err := records.templ.ExecuteTemplate(w, "table", records); err != nil {
+		if err := records.templ.ExecuteTemplate(w, "table", resp); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	})
 	mux.HandleFunc("DELETE /records/{name}", func(w http.ResponseWriter, r *http.Request) {
 		httpLog(r)
-
+		resp := Response{}
 		records.Delete(r.PathValue("name"))
 		records.Save(*dataDir)
 
-		if err := records.templ.ExecuteTemplate(w, "table", records); err != nil {
+		resp.Entries = records.Entries
+		if err := records.templ.ExecuteTemplate(w, "table", resp); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-	})
-	mux.HandleFunc("PUT /records/{name}", func(w http.ResponseWriter, r *http.Request) {
-		httpLog(r)
 	})
 
 	httpServer := &http.Server{
