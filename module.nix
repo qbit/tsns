@@ -13,36 +13,28 @@ in
     services.tsns = {
       package = mkPackageOption pkgs "tsns" { };
 
-      servers = mkOption {
-        description = "Configuration of multiple `tsns` instalces.";
-        default = { };
+      enable = lib.mkEnableOption "Enable tsns for ${name}";
 
-        type = with types; attrsOf (submodule ({ name, ... }: {
-          options = {
-            enable = lib.mkEnableOption "Enable tsns for ${name}";
-            user = mkOption {
-              type = with types; oneOf [ str int ];
-              default = name;
-              description = ''
-                The user the service will use.
-              '';
-            };
+      user = mkOption {
+        type = with types; oneOf [ str int ];
+        default = name;
+        description = ''
+          The user the service will use.
+        '';
+      };
 
-            group = mkOption {
-              type = with types; oneOf [ str int ];
-              default = name;
-              description = ''
-                The group the service will use.
-              '';
-            };
+      group = mkOption {
+        type = with types; oneOf [ str int ];
+        default = name;
+        description = ''
+          The group the service will use.
+        '';
+      };
 
-            dataDir = mkOption {
-              type = types.path;
-              default = "/var/lib/${name}";
-              description = "Path tsns home directory";
-            };
-          };
-        }));
+      dataDir = mkOption {
+        type = types.path;
+        default = "/var/lib/${name}";
+        description = "Path tsns home directory";
       };
     };
   };
