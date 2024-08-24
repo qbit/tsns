@@ -49,7 +49,7 @@ func main() {
 	} else {
 		err = records.Load(*dataDir)
 		// If it's just a missing file, continue along
-		if !os.IsNotExist(err) {
+		if !os.IsNotExist(err) && err != nil {
 			log.Fatalln(err)
 		}
 	}
